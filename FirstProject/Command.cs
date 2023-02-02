@@ -19,12 +19,41 @@ namespace FirstProject
             UIDocument uidoc = uiapp.ActiveUIDocument;
             Application app = uiapp.Application;
             Document doc = uidoc.Document;
-        
-            Reference r = uidoc.Selection.PickObject(ObjectType.Element);
-            Element e = doc.GetElement(r.ElementId);
-            Wall wall = e as Wall;
 
-            TaskDialog.Show("알림", wall.Name);
+            #region Step-4
+            //Reference r = uidoc.Selection.PickObject(ObjectType.Element);
+            //Element e = doc.GetElement(r.ElementId);
+            //Wall wall = e as Wall;
+
+            //TaskDialog.Show("알림", wall.Name);
+            #endregion
+
+            #region Step-5
+            
+            IList<Reference> rf = uidoc.Selection.PickObjects(ObjectType.Element);
+            List<Wall> dfdf = new List<Wall>();
+            foreach (Reference item in rf)
+            {
+                Element wall = doc.GetElement(item.ElementId);
+                Wall w = wall as Wall;
+                dfdf.Add(w);
+            }
+
+            List<string> strs = new List<string>();
+            for (int i = 0; i < rf.Count; i++)
+            {
+                string name = dfdf[i].Name;
+                strs.Add(name);
+            }
+
+            foreach (string item in strs)
+            {
+                TaskDialog.Show("벽체의 이름은 : ", item + "입니다.");
+            }
+
+            #endregion
+
+
 
             return Result.Succeeded;
         }
