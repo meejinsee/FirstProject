@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
+using Autodesk.Revit.DB.Structure;
+
 
 namespace FirstProject
 {
@@ -29,27 +31,56 @@ namespace FirstProject
             #endregion
 
             #region Step-5
-            
-            IList<Reference> rf = uidoc.Selection.PickObjects(ObjectType.Element);
-            List<Wall> dfdf = new List<Wall>();
-            foreach (Reference item in rf)
+
+            //IList<Reference> rf = uidoc.Selection.PickObjects(ObjectType.Element);
+            //List<Wall> dfdf = new List<Wall>();
+            //foreach (Reference item in rf)
+            //{
+            //    Element wall = doc.GetElement(item.ElementId);
+            //    Wall w = wall as Wall;
+            //    dfdf.Add(w);
+            //}
+
+            //List<string> strs = new List<string>();
+            //for (int i = 0; i < rf.Count; i++)
+            //{
+            //    string name = dfdf[i].Name;
+            //    strs.Add(name);
+            //}
+
+            //foreach (string item in strs)
+            //{
+            //    TaskDialog.Show("벽체의 이름은 : ", item + "입니다.");
+            //}
+
+            #endregion
+
+            #region Step-6
+            //public FamilyInstance NewFamilyInstance(Curve curve,FamilySymbol symbol,Level level, StructuralType structuralType)
+
+            XYZ p1 = new XYZ(0, 0, 0);
+            XYZ p2 = new XYZ(1000, 0, 0)/304.8;
+            Line line = Line.CreateBound(p1, p2);
+
+            FilteredElementCollector col = new FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_StructuralFraming).OfClass(typeof(FamilySymbol));
+            FamilySymbol fs = null;
+            foreach (FamilySymbol item in col)
             {
-                Element wall = doc.GetElement(item.ElementId);
-                Wall w = wall as Wall;
-                dfdf.Add(w);
+                if(item.Name == "G1")
+                {
+                    fs = item;  
+                }
             }
 
-            List<string> strs = new List<string>();
-            for (int i = 0; i < rf.Count; i++)
-            {
-                string name = dfdf[i].Name;
-                strs.Add(name);
-            }
+            Level leve = doc.ActiveView.GenLevel;
+            StructuralType f = StructuralType.Beam;
 
-            foreach (string item in strs)
-            {
-                TaskDialog.Show("벽체의 이름은 : ", item + "입니다.");
-            }
+            Transaction trans = new Transaction(doc, "Create");
+            trans.Start();
+            fs.Activate();
+            FamilyInstance ffs = doc.Create.NewFamilyInstance(line, fs, leve, f);
+            trans.Commit();
+
 
             #endregion
 
